@@ -11,3 +11,6 @@
 - Rachel Kathlen Orderique Estrada
 - Johan Aldair Porras Pereda
 - Johan Mario Alarcon Quispe
+
+## Profesor
+- MITCHELL PAULO BLANCAS NUÑEZ
