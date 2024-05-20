@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Recarga</class>
+ <widget class="QWidget" name="Recarga">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>638</width>
+    <height>243</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>-20</y>
+     <width>641</width>
+     <height>441</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>../img/background_2.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="line_Cuenta">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>50</y>
+     <width>271</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: gray;
+color: white;
+</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>20</y>
+     <width>231</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: white;
+font-size: 15px</string>
+   </property>
+   <property name="text">
+    <string>Número de Cuenta</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>90</y>
+     <width>231</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: white;
+font-size: 15px</string>
+   </property>
+   <property name="text">
+    <string>Cantidad</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="line_Cantidad">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>120</y>
+     <width>171</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: gray;
+color: white;
+</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="button_TraCuen">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>180</y>
+     <width>131</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    background-color: #8a2be2; /* Morado */
+    border: 2px solid #8a2be2; /* Borde del mismo color que el fondo para que no sea visible */
+    border-radius: 5px; /* Bordes redondeados */
+    color: white; /* Color del texto */
+    padding: 5px 15px; /* Espaciado interno */
+    font-size: 14px; /* Tamaño de la letra */
+}
+
+QPushButton:hover {
+    background-color: #6a1b9a; /* Morado más oscuro al pasar el mouse */
+    border-color: #6a1b9a; /* Borde más oscuro */
+}
+</string>
+   </property>
+   <property name="text">
+    <string>Aceptar</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="button_TraCuen_2">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>180</y>
+     <width>131</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    background-color: #ff7f0e; /* Naranja */
+    border: 2px solid #ff7f0e; /* Borde del mismo color que el fondo para que no sea visible */
+    border-radius: 5px; /* Bordes redondeados */
+    color: white; /* Color del texto */
+    padding: 5px 15px; /* Espaciado interno */
+    font-size: 14px; /* Tamaño de la letra */
+}
+
+QPushButton:hover {
+    background-color: #cc7000; /* Naranja más oscuro al pasar el mouse */
+    border-color: #cc7000; /* Borde más oscuro */
+}
+
+</string>
+   </property>
+   <property name="text">
+    <string>Cancelar</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>50</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>Visa</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>MasterCard</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Yape</string>
+    </property>
+   </item>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
