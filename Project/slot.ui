@@ -23,7 +23,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="button_Recarga">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -88,38 +88,7 @@ QPushButton:pressed &gt; QIcon {
     </font>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>150</y>
-     <width>141</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-    border: 2px solid #ccc; /* Un borde sólido para resaltar la sombra */
-    border-radius: 5px; /* Bordes redondeados para un aspecto más suave */
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2); /* Establece la sombra */
-}
-</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>../img/Iniciar.png</normaloff>../img/Iniciar.png</iconset>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>140</width>
-     <height>48</height>
-    </size>
-   </property>
-  </widget>
-  <widget class="QLabel" name="background">
+  <widget class="QLabel" name="button_Go">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -156,13 +125,26 @@ QPushButton:pressed &gt; QIcon {
     </font>
    </property>
   </widget>
-  <zorder>background</zorder>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>180</y>
+     <width>121</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>JUGAR</string>
+   </property>
+  </widget>
+  <zorder>button_Go</zorder>
   <zorder>game</zorder>
-  <zorder>pushButton</zorder>
+  <zorder>button_Recarga</zorder>
   <zorder>lcdMonto</zorder>
   <zorder>lcdApuesta</zorder>
-  <zorder>pushButton_2</zorder>
   <zorder>lcdApuesta_2</zorder>
+  <zorder>pushButton</zorder>
  </widget>
  <resources>
   <include location="../img/test.qrc"/>
