@@ -1,58 +1,172 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>Game_visual</class>
+ <widget class="QWidget" name="Game_visual">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>639</width>
-    <height>413</height>
+    <width>644</width>
+    <height>423</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QPushButton" name="Buttoncont">
+  <widget class="QOpenGLWidget" name="game">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>90</y>
-     <width>151</width>
+     <x>50</x>
+     <y>80</y>
+     <width>391</width>
+     <height>231</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>10</y>
+     <width>141</width>
      <height>51</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton:pressed {
+    background-color: #555;
+    border-color: #333;
+}
+
+QPushButton:pressed &gt; QIcon {
+    color: #000;
+    filter: brightness(50%);
+}
+</string>
+   </property>
    <property name="text">
-    <string>PushButton</string>
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../img/RECARGAR.png</normaloff>../img/RECARGAR.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>140</width>
+     <height>48</height>
+    </size>
    </property>
   </widget>
-  <widget class="QLabel" name="label_cont">
+  <widget class="QLCDNumber" name="lcdMonto">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>190</y>
-     <width>91</width>
-     <height>21</height>
+     <x>30</x>
+     <y>350</y>
+     <width>141</width>
+     <height>41</height>
     </rect>
    </property>
-   <property name="text">
-    <string>TextLabel</string>
+   <property name="font">
+    <font>
+     <strikeout>false</strikeout>
+    </font>
    </property>
   </widget>
-  <widget class="QSlider" name="horizontalSlider">
+  <widget class="QLCDNumber" name="lcdApuesta">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>270</y>
-     <width>211</width>
-     <height>31</height>
+     <x>260</x>
+     <y>350</y>
+     <width>141</width>
+     <height>41</height>
     </rect>
    </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
+   <property name="font">
+    <font>
+     <strikeout>false</strikeout>
+    </font>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>150</y>
+     <width>141</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: 2px solid #ccc; /* Un borde sólido para resaltar la sombra */
+    border-radius: 5px; /* Bordes redondeados para un aspecto más suave */
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2); /* Establece la sombra */
+}
+</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../img/Iniciar.png</normaloff>../img/Iniciar.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>140</width>
+     <height>48</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QLabel" name="background">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>651</width>
+     <height>431</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-image: url(:/newPrefix/background.qrc.jpg);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>../img/background.qrc.jpg</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLCDNumber" name="lcdApuesta_2">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>350</y>
+     <width>141</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <strikeout>false</strikeout>
+    </font>
+   </property>
+  </widget>
+  <zorder>background</zorder>
+  <zorder>game</zorder>
+  <zorder>pushButton</zorder>
+  <zorder>lcdMonto</zorder>
+  <zorder>lcdApuesta</zorder>
+  <zorder>pushButton_2</zorder>
+  <zorder>lcdApuesta_2</zorder>
  </widget>
- <resources/>
+ <resources>
+  <include location="../img/test.qrc"/>
+  <include location="../img/fondo.qrc"/>
+ </resources>
  <connections/>
 </ui>
