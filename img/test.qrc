@@ -1,7 +1,0 @@
-<RCC>
-  <qresource prefix="fondo">
-    <file>INICIAR (1).png</file>
-    <file>background.qrc.jpg</file>
-    <file>Welcome.png</file>
-  </qresource>
-</RCC>

@@ -1,49 +1,31 @@
+import pygame
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
-from PyQt5.uic import loadUi
-from PyQt5.QtGui import QPixmap
+from menu import main_menu
+from game import game_screen, load_symbol_images
 
-class MyWindow(QMainWindow):
+# Inicializar Pygame
+pygame.init()
 
-    def __init__(self):
-        super(MyWindow, self).__init__()
-        loadUi('C:\\Users\\usuario\\Desktop\\Proyect_Final\\Proyect_final\\Project\\inicio.ui', self)
-        self.background_inicio.setPixmap(QPixmap("C:\\Users\\usuario\\Desktop\\Proyect_Final\\Proyect_final\\img\\Welcome.png"))
-        self.button_Inicio.clicked.connect(self.show_slot)  # Conectar el botón con el método show_slot
+# Definir tamaño de la pantalla
+WIDTH = 800
+HEIGHT = 500
 
-    def show_slot(self):
-        self.slot_window = SlotWindow()
-        self.slot_window.show()
-        self.close()  # Cerrar la ventana principal
+# Crear la ventana principal
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Mi Juego")
 
-    def show_recargas(self):
-        self.slot_window = SlotWindow()
-        self.slot_window.show()
-        self.button_Recarga.clicked.connect(self.show_slot)
+# Cargar imágenes de los símbolos
+symbol_images = load_symbol_images()
 
-class SlotWindow(QWidget):
+# Bucle principal
+def main():
+    while True:
+        # Pantalla de inicio
+        main_menu(screen)
+        
+        # Pantalla del juego
+        game_screen(screen, symbol_images)
 
-    def __init__(self):
-        super(SlotWindow, self).__init__()
-        loadUi('C:\\Users\\usuario\\Desktop\\Proyect_Final\\Proyect_final\\Project\\slot.ui', self)
-        self.setStyleSheet("background-image: url(C:\\Users\\usuario\\Desktop\\Proyect_Final\\Proyect_final\\img\\background.qrc.jpg)")
-        self.button_Recarga.clicked.connect(self.show_recargas)
-
-    def show_recargas(self):
-        self.recargas_window = RecargasWindow()
-        self.recargas_window.show()
-        self.close()  # Cierra la ventana actual
-
-class RecargasWindow(QWidget):
-
-    def __init__(self):
-        super(RecargasWindow, self).__init__()
-        loadUi('C:\\Users\\usuario\\Desktop\\Proyect_Final\\Proyect_final\\Project\\recargas.ui', self)
-        self.setStyleSheet("background-image: url(C:\\Users\\usuario\\Desktop\\Proyect_Final\\Proyect_final\\img\\background_2.png)")
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = MyWindow()
-    window.show()
-    sys.exit(app.exec())
+# Comenzar la aplicación
+if __name__ == "__main__":
+    main()
