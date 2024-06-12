@@ -1,5 +1,6 @@
 import pygame
 import sys
+import os
 
 # Inicializar Pygame
 pygame.init()
@@ -25,12 +26,16 @@ def draw_text(text, font, color, surface, x, y):
 # Pantalla de inicio
 def main_menu(screen):
     clock = pygame.time.Clock()
+    
+    # Cargar imagen de fondo y redimensionarla fuera del bucle principal
+    ruta_imagen = os.path.join('img', 'BIENVENIDO.png')
+    background = pygame.image.load(ruta_imagen)
+    background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+    
     while True:
         screen.fill(WHITE)
         
-        # Cargar imagen de fondo y redimensionarla
-        background = pygame.image.load('C:\\Users\\usuario\\Desktop\\Proyect_Final\\Proyect_final\\img\\BIENVENIDO.png')
-        background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+        # Dibujar la imagen de fondo
         screen.blit(background, (0, 0))
 
         # Posición del botón (ajustar aquí)

@@ -1,5 +1,6 @@
 import pygame
 import sys
+import os
 
 # Inicializar Pygame
 pygame.init()
@@ -22,7 +23,7 @@ def recharge_screen(current_saldo):
     pygame.display.set_caption("Recargar Saldo")
 
     # Cargar imagen de fondo
-    background = pygame.image.load('C:\\Users\\usuario\\Desktop\\Proyect_Final\\Proyect_final\\img\\background_2.png')
+    background = pygame.image.load(os.path.join('img', 'fon_recharge.jpg'))
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
     input_box = pygame.Rect(150, 150, 300, 50)
@@ -37,7 +38,8 @@ def recharge_screen(current_saldo):
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                done = True
+                pygame.quit()
+                sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if input_box.collidepoint(event.pos):
                     active = not active
@@ -57,6 +59,18 @@ def recharge_screen(current_saldo):
                     else:
                         text += event.unicode
 
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Botón izquierdo del mouse
+                    if accept_button_rect.collidepoint(event.pos):
+                        try:
+                            new_saldo = current_saldo + int(text)
+                        except ValueError:
+                            new_saldo = current_saldo
+                        done = True
+                    elif cancel_button_rect.collidepoint(event.pos):
+                        done = True
+                        new_saldo = current_saldo
+
         screen.blit(background, (0, 0))  # Dibujar imagen de fondo
 
         pygame.draw.rect(screen, color, input_box, 2)
@@ -71,23 +85,6 @@ def recharge_screen(current_saldo):
         cancel_button_rect = pygame.draw.rect(screen, RED, (350, 250, 100, 50))
         draw_text("Cancelar", font, WHITE, screen, 400, 275)
 
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Botón izquierdo del mouse
-                    if accept_button_rect.collidepoint(event.pos):
-                        try:
-                            new_saldo = current_saldo + int(text)
-                        except ValueError:
-                            new_saldo = current_saldo
-                        done = True
-                   
-                    elif cancel_button_rect.collidepoint(event.pos):
-                        done = True
-                        new_saldo = current_saldo
-            elif event.type == pygame.QUIT:
-                done = True
-                new_saldo = current_saldo
-
         pygame.display.flip()
 
     return new_saldo
@@ -101,7 +98,7 @@ def draw_text(text, font, color, surface, x, y):
 def main():
     saldo = int(sys.argv[1])
     new_saldo = recharge_screen(saldo)
-    print(new_saldo)  
+    print(new_saldo)
 
 if __name__ == "__main__":
     main()
