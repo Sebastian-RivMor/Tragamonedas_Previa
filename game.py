@@ -23,22 +23,24 @@ font = pygame.font.SysFont(None, 48)
 
 # Definir símbolos del slot machine
 SYMBOLS = [
-    'symbol_banana', 'symbol_bar', 'symbol_campana', 'symbol_cereza',
-    'symbol_limon', 'symbol_naranja', 'symbol_sandia', 'symbol_siete', 'symbol_uva'
+    'symbol_apple', 'symbol_bar', 'symbol_bell', 'symbol_cherry',
+    'symbol_limon', 'symbol_grape', 'symbol_orange', 'symbol_seven', 'symbol_watermelon'
 ]
 
 # Definir posiciones iniciales de los rieles
-REEL_X_POSITIONS = [275, 395, 510]
-REEL_SPEEDS = [10, 15, 20]
+REEL_X_POSITIONS = [245, 405, 560]
+REEL_SPEEDS = [35, 50, 40]
 
 # Tamaño del área donde se muestran los símbolos
-SLOT_AREA = pygame.Rect(175, 150, 450, 200)
+SLOT_AREA = pygame.Rect(175, 173, 455, 100)
 
-# Función para cargar las imágenes de los símbolos
+# Función para cargar las imágenes de los símbolos y redimensionarlas
 def load_symbol_images():
     symbol_images = {}
     for symbol in SYMBOLS:
-        symbol_images[symbol] = pygame.image.load(os.path.join('img', 'symbolos', f'{symbol}.png'))
+        image = pygame.image.load(os.path.join('img', 'symbolos', f'{symbol}.png'))
+        image = pygame.transform.scale(image, (65, 65))  # Redimensionar las imágenes de los símbolos
+        symbol_images[symbol] = image
     return symbol_images
 
 # Pantalla del juego
@@ -49,8 +51,19 @@ def game_screen(screen, symbol_images):
     reels = [0, 0, 0]
     spin_start_time = 0
 
-    slot_background = pygame.image.load(os.path.join('img', 'slot_fond.jpg'))
-    slot_background = pygame.transform.scale(slot_background, (SLOT_AREA.width, SLOT_AREA.height))
+    # Cargar las tres imágenes de fondo
+    background_1 = pygame.image.load(os.path.join('img', 'fond_princ.png'))  # Ruta a la primera imagen de fondo
+    background_1 = pygame.transform.scale(background_1, (127, 237))
+
+    background_2 = pygame.image.load(os.path.join('img', 'fond_princ.png'))  # Ruta a la segunda imagen de fondo
+    background_2 = pygame.transform.scale(background_2, (127, 237))
+
+    background_3 = pygame.image.load(os.path.join('img', 'fond_princ.png'))  # Ruta a la tercera imagen de fondo
+    background_3 = pygame.transform.scale(background_3, (128, 237))
+
+    background_1_pos = (177, 155)  
+    background_2_pos = (340, 155)  
+    background_3_pos = (500, 155)
 
     play_button_image = pygame.image.load(os.path.join('img', 'buttons_img', 'jugar.png'))
     play_button_image = pygame.transform.scale(play_button_image, (140, 100))
@@ -68,17 +81,75 @@ def game_screen(screen, symbol_images):
     recharge_button_image = pygame.transform.scale(recharge_button_image, (160, 50))
     recharge_button_rect = recharge_button_image.get_rect(topleft=(WIDTH - 180, 50))
 
+    # Imagen que se superpone sobre los símbolos
+    overlay_image = pygame.image.load(os.path.join('img', 'fondo_sombra_sup.png'))  
+    overlay_height = 242
+    overlay_image = pygame.transform.scale(overlay_image, (SLOT_AREA.width, overlay_height))
+
     # Posiciones iniciales de los rieles, asegurándose de que estén espaciados uniformemente
-    reel_positions = [[SLOT_AREA.top + i * (SLOT_AREA.height // len(SYMBOLS)) for i in range(len(SYMBOLS))] for _ in range(3)]
+    symbol_height = 100  # Altura de cada símbolo, ajustada para asegurar espacio
+    num_symbols = len(SYMBOLS)
+    reel_positions = [random.randint(0, num_symbols - 1) for _ in range(3)]
+
 
     while True:
         screen.fill(WHITE)
 
+        # Dibujar la imagen del fondo principal
         background = pygame.image.load(os.path.join('img', 'pose.png'))
         background = pygame.transform.scale(background, (WIDTH, HEIGHT))
         screen.blit(background, (0, 0))
 
-        screen.blit(slot_background, (SLOT_AREA.x, SLOT_AREA.y))
+        # Dibujar la imagen de fondo del brillo
+        brillo_image = pygame.image.load(os.path.join('img', 'fondo_brillo_prev.png'))
+        overlay_height = 242
+        brillo_image = pygame.transform.scale(brillo_image, (SLOT_AREA.width, overlay_height))
+        screen.blit(brillo_image, (SLOT_AREA.x, SLOT_AREA.y - 20))  # Ajustar la posición Y aquí
+
+        # Dibujar la imagen de fondo de los símbolos
+        screen.blit(background_1, background_1_pos)
+        screen.blit(background_2, background_2_pos)
+        screen.blit(background_3, background_3_pos)
+
+        if not spinning:
+            # Restablecer las posiciones de los símbolos en los rieles
+            reel_positions = [[SLOT_AREA.top + i * symbol_height for i in range(num_symbols)] for _ in range(3)]
+
+            # Calcular la posición de la primera fila de símbolos en el centro del área visible
+            center_row = SLOT_AREA.top + (SLOT_AREA.height - symbol_height) // 2
+            # Ajustar las posiciones de los símbolos en los rieles para mostrar al menos una fila completa en el centro
+            for i, reel_position in enumerate(reel_positions):
+                # Calcular la posición del centro del carrete
+                center_reel_y = center_row - symbol_height * (len(reel_position) // 2)
+                # Ajustar la posición de los símbolos para que la fila del centro sea visible
+                for j in range(len(reel_position)):
+                    reel_positions[i][j] = center_reel_y + j * symbol_height
+
+
+        for i, (x_position, speed) in enumerate(zip(REEL_X_POSITIONS, REEL_SPEEDS)):
+            for j in range(len(reel_positions[i])):
+                symbol_index = (reels[i] + j) % num_symbols
+                symbol = SYMBOLS[symbol_index]
+                symbol_image = symbol_images[symbol]
+
+                # Calcular la posición del símbolo
+                symbol_y = reel_positions[i][j]
+                symbol_rect = symbol_image.get_rect(center=(x_position, symbol_y))
+
+                # Renderizar el símbolo solo si está dentro del área visible del carrete
+                if SLOT_AREA.top <= symbol_y <= SLOT_AREA.bottom + symbol_height:
+                    screen.blit(symbol_image, symbol_rect)
+
+                if spinning:
+                    reel_positions[i][j] += speed
+                    if reel_positions[i][j] > SLOT_AREA.bottom + symbol_height:
+                        reel_positions[i][j] = SLOT_AREA.top - symbol_height
+        
+        # Dibujar la imagen de fondo del brillo
+        screen.blit(brillo_image, (SLOT_AREA.x, SLOT_AREA.y - 20))  # Ajustar la posición Y aquí
+
+        # Dibujar la imagen de fondo de la sombra
+        screen.blit(overlay_image, (SLOT_AREA.x, SLOT_AREA.y - 20))  # Ajustar la posición Y aquí
 
         screen.blit(play_button_image, play_button_rect.topleft)
         screen.blit(min_bet_button_image, min_bet_button_rect.topleft)
@@ -86,21 +157,9 @@ def game_screen(screen, symbol_images):
         draw_text("Monto apostado: $" + str(saldo), font, BLUE, screen, WIDTH / 2, 50)
         screen.blit(recharge_button_image, recharge_button_rect.topleft)
 
-        for i, (x_position, speed) in enumerate(zip(REEL_X_POSITIONS, REEL_SPEEDS)):
-            for j in range(len(SYMBOLS)):
-                symbol_index = (reels[i] + j) % len(SYMBOLS)
-                symbol = SYMBOLS[symbol_index]
-                symbol_image = symbol_images[symbol]
-                symbol_rect = symbol_image.get_rect(center=(x_position, reel_positions[i][j]))
-                if SLOT_AREA.top <= reel_positions[i][j] <= SLOT_AREA.bottom:
-                    screen.blit(symbol_image, symbol_rect)
-
-                if spinning:
-                    reel_positions[i][j] -= speed
-                    if reel_positions[i][j] < SLOT_AREA.top - (SLOT_AREA.height // len(SYMBOLS)):
-                        reel_positions[i][j] = SLOT_AREA.bottom + (SLOT_AREA.height // len(SYMBOLS))
-
         pygame.display.update()
+
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -111,6 +170,8 @@ def game_screen(screen, symbol_images):
                     if play_button_rect.collidepoint(event.pos):
                         spinning = True
                         spin_start_time = time.time()
+                        # Girar los rodillos al iniciar el giro
+                        reels = [random.randint(0, num_symbols - 1) for _ in range(3)]
                     elif min_bet_button_rect.collidepoint(event.pos):
                         saldo -= 10
                     elif max_bet_button_rect.collidepoint(event.pos):

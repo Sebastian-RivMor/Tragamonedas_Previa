@@ -23,7 +23,7 @@ def recharge_screen(current_saldo):
     pygame.display.set_caption("Recargar Saldo")
 
     # Cargar imagen de fondo
-    background = pygame.image.load(os.path.join('img', 'fon_recharge.jpg'))
+    background = pygame.image.load(os.path.join('img', 'fond_recarga.jpg'))
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
     input_box = pygame.Rect(150, 150, 300, 50)
