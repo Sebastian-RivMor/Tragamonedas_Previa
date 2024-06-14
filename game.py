@@ -19,7 +19,7 @@ WIDTH = 800
 HEIGHT = 500
 
 # Definir la fuente
-font = pygame.font.SysFont(None, 48)
+font = pygame.font.SysFont(None, 30)
 
 # Definir símbolos del slot machine
 SYMBOLS = [
@@ -43,22 +43,43 @@ def load_symbol_images():
         symbol_images[symbol] = image
     return symbol_images
 
+# Función para dibujar texto con efectos
+def draw_text(text, font, color, surface, x, y):
+    # Renderizar el texto principal (blanco y con efecto de desenfoque)
+    blurred_text = font.render(text, True, (255, 255, 255))  # Texto en blanco
+    blurred_text.set_alpha(200)  # Establecer transparencia (0 a 255)
+    blurred_text = blurred_text.convert_alpha()  # Convertir a superficie con canal alfa
+
+    # Calcular el rectángulo del texto principal
+    text_rect = blurred_text.get_rect(center=(x + 4, y + 6))
+
+    # Dibujar el texto con efecto de desenfoque
+    surface.blit(blurred_text, text_rect)
+
+    # Renderizar el texto con efecto de neon blanco
+    neon_color = (255, 255, 255)
+    neon_text_obj = font.render(text, True, neon_color)
+    neon_text_rect = neon_text_obj.get_rect(center=(x + 5, y + 7))  # Ajuste para efecto hacia abajo y derecha
+    surface.blit(neon_text_obj, neon_text_rect)
+
 # Pantalla del juego
 def game_screen(screen, symbol_images):
     clock = pygame.time.Clock()
     saldo = 1000
+    mont_apost = 0  # Inicializar mont_apost en cero
+    mont_wing = 0
     spinning = False
     reels = [0, 0, 0]
     spin_start_time = 0
 
     # Cargar las tres imágenes de fondo
-    background_1 = pygame.image.load(os.path.join('img', 'fond_princ.png'))  # Ruta a la primera imagen de fondo
+    background_1 = pygame.image.load(os.path.join('img', 'fond_princ.png'))  
     background_1 = pygame.transform.scale(background_1, (127, 237))
 
-    background_2 = pygame.image.load(os.path.join('img', 'fond_princ.png'))  # Ruta a la segunda imagen de fondo
+    background_2 = pygame.image.load(os.path.join('img', 'fond_princ.png'))  
     background_2 = pygame.transform.scale(background_2, (127, 237))
 
-    background_3 = pygame.image.load(os.path.join('img', 'fond_princ.png'))  # Ruta a la tercera imagen de fondo
+    background_3 = pygame.image.load(os.path.join('img', 'fond_princ.png'))   
     background_3 = pygame.transform.scale(background_3, (128, 237))
 
     background_1_pos = (177, 155)  
@@ -89,14 +110,25 @@ def game_screen(screen, symbol_images):
     # Posiciones iniciales de los rieles, asegurándose de que estén espaciados uniformemente
     symbol_height = 100  # Altura de cada símbolo, ajustada para asegurar espacio
     num_symbols = len(SYMBOLS)
-    reel_positions = [random.randint(0, num_symbols - 1) for _ in range(3)]
+    reel_positions = [[SLOT_AREA.top + i * symbol_height for i in range(num_symbols)] for _ in range(3)]
 
+    saldo_border_image = pygame.image.load(os.path.join('img','border', 'border_cash.png'))
+    saldo_border_image = pygame.transform.scale(saldo_border_image, (140, 48))  
+    saldo_border_rect = saldo_border_image.get_rect(left=5, top=130)  
+
+    saldo_border_image_2 = pygame.image.load(os.path.join('img','border', 'mont_apost.png'))
+    saldo_border_image_2 = pygame.transform.scale(saldo_border_image_2, (140, 48))
+    saldo_border_rect_2 = saldo_border_image_2.get_rect(left=5, top=200)
+
+    saldo_border_image_3 = pygame.image.load(os.path.join('img','border', 'mont_wing.png'))
+    saldo_border_image_3 = pygame.transform.scale(saldo_border_image_3, (140, 48))
+    saldo_border_rect_3 = saldo_border_image_3.get_rect(left=5, top=270)
 
     while True:
         screen.fill(WHITE)
 
         # Dibujar la imagen del fondo principal
-        background = pygame.image.load(os.path.join('img', 'pose.png'))
+        background = pygame.image.load(os.path.join('img','pose.png'))
         background = pygame.transform.scale(background, (WIDTH, HEIGHT))
         screen.blit(background, (0, 0))
 
@@ -112,19 +144,9 @@ def game_screen(screen, symbol_images):
         screen.blit(background_3, background_3_pos)
 
         if not spinning:
-            # Restablecer las posiciones de los símbolos en los rieles
-            reel_positions = [[SLOT_AREA.top + i * symbol_height for i in range(num_symbols)] for _ in range(3)]
-
-            # Calcular la posición de la primera fila de símbolos en el centro del área visible
-            center_row = SLOT_AREA.top + (SLOT_AREA.height - symbol_height) // 2
-            # Ajustar las posiciones de los símbolos en los rieles para mostrar al menos una fila completa en el centro
             for i, reel_position in enumerate(reel_positions):
-                # Calcular la posición del centro del carrete
-                center_reel_y = center_row - symbol_height * (len(reel_position) // 2)
-                # Ajustar la posición de los símbolos para que la fila del centro sea visible
                 for j in range(len(reel_position)):
-                    reel_positions[i][j] = center_reel_y + j * symbol_height
-
+                    reel_positions[i][j] = SLOT_AREA.top + j * symbol_height
 
         for i, (x_position, speed) in enumerate(zip(REEL_X_POSITIONS, REEL_SPEEDS)):
             for j in range(len(reel_positions[i])):
@@ -149,17 +171,40 @@ def game_screen(screen, symbol_images):
         screen.blit(brillo_image, (SLOT_AREA.x, SLOT_AREA.y - 20))  # Ajustar la posición Y aquí
 
         # Dibujar la imagen de fondo de la sombra
-        screen.blit(overlay_image, (SLOT_AREA.x, SLOT_AREA.y - 20))  # Ajustar la posición Y aquí
+        screen.blit(overlay_image, (SLOT_AREA.x, SLOT_AREA.y -20))  # Ajustar la posición Y aquí
 
         screen.blit(play_button_image, play_button_rect.topleft)
+
+        # Dibujar la imagen de borde del saldo
+        screen.blit(saldo_border_image, saldo_border_rect.topleft)
+        text_x = saldo_border_rect.left + saldo_border_rect.width // 2
+        text_y = saldo_border_rect.top + saldo_border_rect.height // 2 - 2  
+        draw_text(f"${saldo}", font, BLUE, screen, text_x, text_y + 5)
+
+        # Dibujar la imagen de borde de mont_apost
+        screen.blit(saldo_border_image_2, saldo_border_rect_2.topleft)
+        text_x_2 = saldo_border_rect_2.left + saldo_border_rect_2.width // 2
+        text_y_2 = saldo_border_rect_2.top + saldo_border_rect_2.height // 2 - 2 
+
+        if spinning:
+            draw_text(f"${mont_apost}", font, BLUE, screen, text_x_2, text_y_2 + 5)
+        else:
+            if mont_apost == 200:
+                draw_text(f"$200", font, BLUE, screen, text_x_2, text_y_2 + 5)
+            else:
+                draw_text(f"$400", font, BLUE, screen, text_x_2, text_y_2 + 5)
+        
+        # Dibujar la imagen de borde de mont_wing
+        screen.blit(saldo_border_image_3, saldo_border_rect_3.topleft)
+        text_x_3 = saldo_border_rect_3.left + saldo_border_rect_3.width // 2
+        text_y_3 = saldo_border_rect_3.top + saldo_border_rect_3.height // 2 - 2 
+        draw_text(f"${mont_wing}", font, BLUE, screen, text_x_3, text_y_3 + 5)
+
         screen.blit(min_bet_button_image, min_bet_button_rect.topleft)
         screen.blit(max_bet_button_image, max_bet_button_rect.topleft)
-        draw_text("Monto apostado: $" + str(saldo), font, BLUE, screen, WIDTH / 2, 50)
         screen.blit(recharge_button_image, recharge_button_rect.topleft)
 
         pygame.display.update()
-
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -173,9 +218,11 @@ def game_screen(screen, symbol_images):
                         # Girar los rodillos al iniciar el giro
                         reels = [random.randint(0, num_symbols - 1) for _ in range(3)]
                     elif min_bet_button_rect.collidepoint(event.pos):
-                        saldo -= 10
+                        mont_apost = 200
+                        saldo -= 200
                     elif max_bet_button_rect.collidepoint(event.pos):
-                        saldo -= 100
+                        mont_apost = 400
+                        saldo -= 400
                     elif recharge_button_rect.collidepoint(event.pos):
                         saldo = open_recharge_window(saldo)
 
@@ -190,12 +237,6 @@ def open_recharge_window(current_saldo):
     new_saldo = recharge_process.communicate()[0].strip()
     return int(new_saldo)
 
-def draw_text(text, font, color, surface, x, y):
-    text_obj = font.render(text, True, color)
-    text_rect = text_obj.get_rect()
-    text_rect.center = (x, y)
-    surface.blit(text_obj, text_rect)
-
 def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Slot Machine")
@@ -204,3 +245,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
