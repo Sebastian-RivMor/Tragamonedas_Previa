@@ -7,8 +7,8 @@ from game import game_screen, load_symbol_images
 pygame.init()
 
 # Definir tamaño de la pantalla
-WIDTH = 800
-HEIGHT = 500
+WIDTH = 960
+HEIGHT = 540
 
 # Crear la ventana principal
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
