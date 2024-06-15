@@ -18,13 +18,9 @@ pygame.display.set_caption("Mi Juego")
 symbol_images = load_symbol_images()
 
 # Bucle principal
-def main():
-    while True:
-        # Pantalla de inicio
-        main_menu(screen)
-        
-        # Pantalla del juego
-        game_screen(screen, symbol_images)
+def main():      
+    # Pantalla del juego
+    game_screen(screen, symbol_images)
 
 # Comenzar la aplicación
 if __name__ == "__main__":

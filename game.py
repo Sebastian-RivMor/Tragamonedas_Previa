@@ -5,20 +5,11 @@ import time
 import os
 import subprocess
 
-#Music
-
-pygame.init()
-pygame.mixer.init()
-
-
 # Inicializar Pygame
 pygame.init()
 
-# Definir colores
-WHITE = (255, 255, 255)
-BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
+pygame.mixer.init()
+click_sound = pygame.mixer.Sound(os.path.join('img', 'music', 'sound_click.mp3'))
 
 # Definir tamaño de la pantalla
 WIDTH = 960
@@ -78,7 +69,6 @@ def game_screen(screen, symbol_images):
     reels = [0, 0, 0]
     spin_start_time = 0
 
-
     # Cargar las tres imágenes de fondo
     background_1 = pygame.image.load(os.path.join('img', 'fond_princ.png'))  
     background_1 = pygame.transform.scale(background_1, (127, 240))
@@ -105,8 +95,8 @@ def game_screen(screen, symbol_images):
     max_bet_button_image = pygame.transform.scale(max_bet_button_image, (180, 60))
     max_bet_button_rect = max_bet_button_image.get_rect(topleft=(600, 455))
 
-    recharge_button_image = pygame.image.load(os.path.join('img', 'buttons_img', 'recarga.png'))
-    recharge_button_image = pygame.transform.scale(recharge_button_image, (160, 50))
+    recharge_button_image = pygame.image.load(os.path.join('img', 'buttons_img', 'button_recarga.png'))
+    recharge_button_image = pygame.transform.scale(recharge_button_image, (150, 40))
     recharge_button_rect = recharge_button_image.get_rect(topleft=(WIDTH - 180, 50))
 
     # Imagen que se superpone sobre los símbolos
@@ -119,23 +109,33 @@ def game_screen(screen, symbol_images):
     num_symbols = len(SYMBOLS)
     reel_positions = [[SLOT_AREA.top + i * symbol_height for i in range(num_symbols)] for _ in range(3)]
 
-    saldo_border_image = pygame.image.load(os.path.join('img','border', 'mont_cant.png'))
+    saldo_border_image = pygame.image.load(os.path.join('img', 'border', 'mont_cant.png'))
     saldo_border_image = pygame.transform.scale(saldo_border_image, (180, 52.9))  
     saldo_border_rect = saldo_border_image.get_rect(left=5, top=130)  
 
-    saldo_border_image_2 = pygame.image.load(os.path.join('img','border', 'mont_apostado.png'))
+    saldo_border_image_2 = pygame.image.load(os.path.join('img', 'border', 'mont_apostado.png'))
     saldo_border_image_2 = pygame.transform.scale(saldo_border_image_2, (180, 52.9))
     saldo_border_rect_2 = saldo_border_image_2.get_rect(left=5, top=220)
 
-    saldo_border_image_3 = pygame.image.load(os.path.join('img','border', 'mont_ganado.png'))
+    saldo_border_image_3 = pygame.image.load(os.path.join('img', 'border', 'mont_ganado.png'))
     saldo_border_image_3 = pygame.transform.scale(saldo_border_image_3, (180, 52.9))
     saldo_border_rect_3 = saldo_border_image_3.get_rect(left=5, top=305)
 
+    # Cargar y reproducir la música de fondo
+    try:
+        audio_path = os.path.join('img','music', 'audio_fond.wav')
+        print(f"Loading audio from: {audio_path}")
+        pygame.mixer.music.load(audio_path)
+        pygame.mixer.music.play(-1)
+    except pygame.error as e:
+        print(f"Error loading music: {e}")
+        return
+
     while True:
-        screen.fill(WHITE)
+        screen.fill((255, 255, 255))
 
         # Dibujar la imagen del fondo principal
-        background = pygame.image.load(os.path.join('img','pose.png'))
+        background = pygame.image.load(os.path.join('img', 'pose.png'))
         background = pygame.transform.scale(background, (WIDTH, HEIGHT))
         screen.blit(background, (0, 0))
 
@@ -178,15 +178,14 @@ def game_screen(screen, symbol_images):
         screen.blit(brillo_image, (SLOT_AREA.x, SLOT_AREA.y - 23))  # Ajustar la posición Y aquí
 
         # Dibujar la imagen de fondo de la sombra
-        screen.blit(overlay_image, (SLOT_AREA.x, SLOT_AREA.y -23))  # Ajustar la posición Y aquí
+        screen.blit(overlay_image, (SLOT_AREA.x, SLOT_AREA.y - 23))  # Ajustar la posición Y aquí
 
         screen.blit(play_button_image, play_button_rect.topleft)
-
         # Dibujar la imagen de borde del saldo
         screen.blit(saldo_border_image, saldo_border_rect.topleft)
         text_x = saldo_border_rect.left + saldo_border_rect.width // 2
         text_y = saldo_border_rect.top + saldo_border_rect.height // 2 - 2  
-        draw_text(f"${saldo}", font, BLUE, screen, text_x, text_y + 5)
+        draw_text(f"${saldo}", font, (0, 0, 255), screen, text_x, text_y + 5)
 
         # Dibujar la imagen de borde de mont_apost
         screen.blit(saldo_border_image_2, saldo_border_rect_2.topleft)
@@ -194,23 +193,24 @@ def game_screen(screen, symbol_images):
         text_y_2 = saldo_border_rect_2.top + saldo_border_rect_2.height // 2 - 2 
 
         if spinning:
-            draw_text(f"${mont_apost}", font, BLUE, screen, text_x_2, text_y_2 + 5)
+            draw_text(f"${mont_apost}", font, (0, 0, 255), screen, text_x_2, text_y_2 + 5)
         else:
             if mont_apost == 0:
-                draw_text(f"$0", font, BLUE, screen, text_x_2, text_y_2 + 5)
+                draw_text(f"$0", font, (0, 0, 255), screen, text_x_2, text_y_2 + 5)
             else:
-                draw_text(f"${mont_apost}", font, BLUE, screen, text_x_2, text_y_2 + 5)
+                draw_text(f"${mont_apost}", font, (0, 0, 255), screen, text_x_2, text_y_2 + 5)
         
         # Dibujar la imagen de borde de mont_wing
         screen.blit(saldo_border_image_3, saldo_border_rect_3.topleft)
         text_x_3 = saldo_border_rect_3.left + saldo_border_rect_3.width // 2
         text_y_3 = saldo_border_rect_3.top + saldo_border_rect_3.height // 2 - 2 
-        draw_text(f"${mont_wing}", font, BLUE, screen, text_x_3, text_y_3 + 5)
+        draw_text(f"${mont_wing}", font, (0, 0, 255), screen, text_x_3, text_y_3 + 5)
 
         screen.blit(min_bet_button_image, min_bet_button_rect.topleft)
         screen.blit(max_bet_button_image, max_bet_button_rect.topleft)
         screen.blit(recharge_button_image, recharge_button_rect.topleft)
 
+        # Actualiza la pantalla despues de dibujar todos los elementos 
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -224,29 +224,59 @@ def game_screen(screen, symbol_images):
                         spin_start_time = time.time()
                         # Girar los rodillos al iniciar el giro
                         reels = [random.randint(0, num_symbols - 1) for _ in range(3)]
+                        click_sound.play()  
+                    # Reduce el monto apostado si no es cero
                     elif min_bet_button_rect.collidepoint(event.pos):
-                        if (mont_apost !=0):
+                        if (mont_apost != 0):
                             mont_apost -= 200
+                            click_sound.play()  # Reproduce el sonido de clic
+                    # Aumenta el monto apostado a 200
                     elif max_bet_button_rect.collidepoint(event.pos):
                         mont_apost += 200
+                        click_sound.play()  # Reproduce el sonido de clic
                     elif recharge_button_rect.collidepoint(event.pos):
+                        # Llama a la funcion de recarga y actualiza el saldo
                         saldo = open_recharge_window(saldo)
 
+        # Verifica si ha pasado el tiempo suficiente desde que inició el giro de los rodillos
         if spinning and time.time() - spin_start_time >= 2:
+            # Detiene el giro de los rodillos después de 2 segundos
             spinning = False
-
+        
+        # Limita la velocidad de fotogramas a 60 FPS para controlar la velocidad del juego
         clock.tick(60)
 
 def open_recharge_window(current_saldo):
-    recharge_process = subprocess.Popen([sys.executable, 'recharge.py', str(current_saldo)], stdout=subprocess.PIPE)
-    recharge_process.wait()
-    new_saldo = recharge_process.communicate()[0].strip()
-    return int(new_saldo)
+    try:
+        # Ejecutar el script 'recharge.py' con el saldo actual como argumento
+        result = subprocess.run([sys.executable, 'recharge.py', str(current_saldo)], capture_output=True, text=True, check=True)
+
+        # Obtener la última línea de la salida que contiene el nuevo saldo y elimina espacios en blanco adicionales
+        new_saldo_line = result.stdout.strip().splitlines()[-1]
+        
+        # Filtra y convierte los dígitos de la línea en un entero new_saldo
+        new_saldo = int(''.join(filter(str.isdigit, new_saldo_line)))
+        
+        return new_saldo
+    
+    except subprocess.CalledProcessError as e:
+        print(f"Error al ejecutar recharge.py: {e}")
+        
+    except (ValueError, IndexError) as e:
+        print(f"Error al procesar nuevo saldo: {e}")
+    return current_saldo
 
 def main():
+    # Establecer el modo de pantalla utilizando las dimensiones WIDTH y HEIGHT
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    
+    # Establecer el título de la ventana del juego
     pygame.display.set_caption("Slot Machine")
+    
+    # Cargar las imágenes de los símbolos del juego
     symbol_images = load_symbol_images()
+    
+    # Llamar a la función game_screen() para comenzar el juego
     game_screen(screen, symbol_images)
 
 if __name__ == "__main__":

@@ -7,9 +7,6 @@ pygame.init()
 
 # Definir colores
 WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
 
 # Definir tamaño de la pantalla
 WIDTH = 600
@@ -18,77 +15,111 @@ HEIGHT = 400
 # Definir la fuente
 font = pygame.font.SysFont(None, 48)
 
+# Interacción con el usuario
 def recharge_screen(current_saldo):
+    # Se crea el formulario 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Recargar Saldo")
 
     # Cargar imagen de fondo
-    background = pygame.image.load(os.path.join('img', 'fond_recarga.jpg'))
+    background = pygame.image.load(os.path.join('img', 'fond_recarga.png'))
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
-    input_box = pygame.Rect(150, 150, 300, 50)
+    # Cargar imagen del botón "Aceptar"
+    accept_button_image = pygame.image.load(os.path.join('img','buttons_img', 'button_acept.png'))
+    accept_button_image = pygame.transform.scale(accept_button_image, (160, 70))
+
+    # Cargar imagen del botón "Cancelar"
+    cancel_button_image = pygame.image.load(os.path.join('img','buttons_img', 'button_cancel.png'))
+    cancel_button_image = pygame.transform.scale(cancel_button_image, (170, 70))
+
+    # Cargar imagen de fondo para el cuadro de entrada
+    input_background = pygame.image.load(os.path.join('img','label' ,'zone_recarga.png'))
+    input_background = pygame.transform.scale(input_background, (300, 140))  # Ajustar tamaño según sea necesario
+
+    # Cuadro de entrada para ingresar el crédito/saldo
+    txtSaldo = pygame.Rect(150, 150, 300, 50)
+    input_background_y_offset = -80  
     active = False
-    color_inactive = pygame.Color('lightskyblue3')
-    color_active = pygame.Color('dodgerblue2')
-    color = color_inactive
     text = ''
+
+    # Indica si la interfaz se ha terminado
     done = False
+
+    # Inicializa con el saldo actual que se pasa como argumento a la función
     new_saldo = current_saldo
 
     while not done:
+        # Itera sobre todos los eventos generados 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                # Cierran y terminan el programa si se detecta un evento de salida
                 pygame.quit()
                 sys.exit()
+            
+            # Maneja eventos cuando se hace clic 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if input_box.collidepoint(event.pos):
+                # Verifica si la posición del clic está dentro del txtSaldo
+                if txtSaldo.collidepoint(event.pos):
+                    # Alterna el estado dependiendo de si se hizo clic dentro del cuadro
                     active = not active
-                else:
-                    active = False
-                color = color_active if active else color_inactive
+
+                # Detectar clic en el botón "Aceptar"
+                if accept_button_rect.collidepoint(event.pos):
+                    try:
+                        # El texto ingresado se le suma al saldo actual, actualizando el nuevo saldo
+                        new_saldo = current_saldo + int(text)
+                        done = True  # Cerrar la ventana al presionar "Aceptar"
+                    # Captura errores de conversión 
+                    except ValueError:
+                        text = ''
+                
+                # Detectar clic del botón "Cancelar"
+                elif cancel_button_rect.collidepoint(event.pos):
+                    done = True # Cerrar la ventana al presionar "Cancelar"
+
+            # Manejo de eventos cuando se presiona una tecla
             elif event.type == pygame.KEYDOWN:
+                # Verifica si el cuadro de entrada está activo
                 if active:
+                    # Verifica si se presionó ENTER
                     if event.key == pygame.K_RETURN:
                         try:
                             new_saldo = current_saldo + int(text)
+                            # Termina el bucle al presionar ENTER
                             done = True
                         except ValueError:
                             text = ''
+                    # Verifica si se presionó la tecla Backspace
                     elif event.key == pygame.K_BACKSPACE:
+                        # Elimina el último carácter del texto ingresado
                         text = text[:-1]
+                    # Captura todos los demás caracteres ingresados y los agrega al texto
                     else:
                         text += event.unicode
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Botón izquierdo del mouse
-                    if accept_button_rect.collidepoint(event.pos):
-                        try:
-                            new_saldo = current_saldo + int(text)
-                        except ValueError:
-                            new_saldo = current_saldo
-                        done = True
-                    elif cancel_button_rect.collidepoint(event.pos):
-                        done = True
-                        new_saldo = current_saldo
-
         screen.blit(background, (0, 0))  # Dibujar imagen de fondo
 
-        pygame.draw.rect(screen, color, input_box, 2)
+        # Dibujar imagen de fondo del cuadro de entrada
+        screen.blit(input_background, (txtSaldo.x, txtSaldo.y + input_background_y_offset))
 
-        txt_surface = font.render(text, True, color)
-        width = max(200, txt_surface.get_width() + 10)
-        input_box.w = width
-        screen.blit(txt_surface, (input_box.x + 5, input_box.y + 5))
+        txt_surface = font.render(text, True, WHITE)
+        # Alinear horizontalmente el texto en el centro del cuadro de entrada
+        input_x = txtSaldo.x + (txtSaldo.width - txt_surface.get_width()) // 2
+        input_y = txtSaldo.y + (txtSaldo.height - txt_surface.get_height()) // 2
+        screen.blit(txt_surface, (input_x, input_y))
 
-        accept_button_rect = pygame.draw.rect(screen, GREEN, (150, 250, 100, 50))
-        draw_text("Aceptar", font, WHITE, screen, 200, 275)
-        cancel_button_rect = pygame.draw.rect(screen, RED, (350, 250, 100, 50))
-        draw_text("Cancelar", font, WHITE, screen, 400, 275)
+        # Dibujar el botón "Aceptar" con la imagen
+        accept_button_rect = screen.blit(accept_button_image, (100, 250))
+        
+        # Dibujar el botón "Cancelar" con la imagen
+        cancel_button_rect = screen.blit(cancel_button_image, (350, 250))
 
         pygame.display.flip()
 
     return new_saldo
 
+# Renderiza texto en una superficie pygame en la posición especificada
 def draw_text(text, font, color, surface, x, y):
     text_obj = font.render(text, True, color)
     text_rect = text_obj.get_rect()
@@ -96,8 +127,13 @@ def draw_text(text, font, color, surface, x, y):
     surface.blit(text_obj, text_rect)
 
 def main():
-    saldo = int(sys.argv[1])
-    new_saldo = recharge_screen(saldo)
+    # Verifica si se proporcionó al menos un argumento en la línea de comandos
+    if len(sys.argv) < 2:
+        return
+    # Lee el saldo actual desde los argumentos de la línea de comandos
+    current_saldo = int(sys.argv[1])
+    new_saldo = recharge_screen(current_saldo)
+    # Imprime el nuevo saldo
     print(new_saldo)
 
 if __name__ == "__main__":
