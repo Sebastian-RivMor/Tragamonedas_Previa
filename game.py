@@ -19,9 +19,10 @@ HEIGHT = 540
 font = pygame.font.SysFont(None, 30)
 
 # Definir símbolos del slot machine
+
 SYMBOLS = [
-    'symbol_apple', 'symbol_bar', 'symbol_bell', 'symbol_cherry',
-    'symbol_limon', 'symbol_grape', 'symbol_orange', 'symbol_seven', 'symbol_watermelon'
+'symbol_apple', 'symbol_bar', 'symbol_bell', 'symbol_cherry',
+'symbol_limon', 'symbol_seven', 'symbol_watermelon'
 ]
 
 # Definir posiciones iniciales de los rieles
@@ -225,18 +226,31 @@ def game_screen(screen, symbol_images):
                         # Girar los rodillos al iniciar el giro
                         reels = [random.randint(0, num_symbols - 1) for _ in range(3)]
                         click_sound.play()  
-                    # Reduce el monto apostado si no es cero
-                    elif min_bet_button_rect.collidepoint(event.pos):
-                        if (mont_apost != 0):
-                            mont_apost -= 200
-                            click_sound.play()  # Reproduce el sonido de clic
-                    # Aumenta el monto apostado a 200
-                    elif max_bet_button_rect.collidepoint(event.pos):
-                        mont_apost += 200
+                    aux_bet = 0  # Variable para almacenar la apuesta anterior
+                     # Verificar si el saldo es mayor a 0 antes de permitir la apuesta
+                    if saldo > 0:
+                        # Reduce el monto apostado si no es cero
+                        if min_bet_button_rect.collidepoint(event.pos):
+                            if mont_apost != 0:
+                                if mont_apost >= 200: #Verifica que la apuesta actual sea suficiente para reducir
+                                    mont_apost -= 200
+                                    saldo +=200 #Devolver la cantidad al saldo
+                                    click_sound.play()  # Reproduce el sonido de clic
+                
+                        # Aumenta el monto apostado a 200 y reduce el saldo en la misma cantidad
+                        if max_bet_button_rect.collidepoint(event.pos):
+                            if saldo >= 200:  # Verificar si hay suficiente saldo
+                                aux_bet = mont_apost #Almacenar la apuesta anterior
+                                mont_apost += 200
+                                saldo -= 200  # Disminuir el saldo
+                                click_sound.play()  # Reproduce el sonido de clic
+            
+                    if recharge_button_rect.collidepoint(event.pos):
                         click_sound.play()  # Reproduce el sonido de clic
-                    elif recharge_button_rect.collidepoint(event.pos):
                         # Llama a la funcion de recarga y actualiza el saldo
                         saldo = open_recharge_window(saldo)
+                        
+                    
 
         # Verifica si ha pasado el tiempo suficiente desde que inició el giro de los rodillos
         if spinning and time.time() - spin_start_time >= 2:
@@ -281,4 +295,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

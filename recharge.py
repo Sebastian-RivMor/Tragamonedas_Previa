@@ -5,6 +5,17 @@ import os
 # Inicializar Pygame
 pygame.init()
 
+# Inicializar el mezclador de sonido
+pygame.mixer.init()
+
+# Verificar si el archivo de sonido existe
+click_sound_path = os.path.join('img', 'music', 'sound_click.mp3')
+if os.path.exists(click_sound_path):
+    click_sound = pygame.mixer.Sound(click_sound_path)
+else:
+    print("El archivo de sonido no existe en la ruta especificada:", click_sound_path)
+    click_sound = None
+
 # Definir colores
 WHITE = (255, 255, 255)
 
@@ -61,12 +72,15 @@ def recharge_screen(current_saldo):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Verifica si la posición del clic está dentro del txtSaldo
                 if txtSaldo.collidepoint(event.pos):
+                    if click_sound:
+                        click_sound.play()  # Reproduce el sonido de clic
                     # Alterna el estado dependiendo de si se hizo clic dentro del cuadro
                     active = not active
-
                 # Detectar clic en el botón "Aceptar"
-                if accept_button_rect.collidepoint(event.pos):
-                    try:
+                elif accept_button_rect.collidepoint(event.pos):
+                    if click_sound:
+                        click_sound.play()  # Reproduce el sonido de clic
+                    try: 
                         # El texto ingresado se le suma al saldo actual, actualizando el nuevo saldo
                         new_saldo = current_saldo + int(text)
                         done = True  # Cerrar la ventana al presionar "Aceptar"
@@ -76,6 +90,8 @@ def recharge_screen(current_saldo):
                 
                 # Detectar clic del botón "Cancelar"
                 elif cancel_button_rect.collidepoint(event.pos):
+                    if click_sound:
+                        click_sound.play()  # Reproduce el sonido de clic
                     done = True # Cerrar la ventana al presionar "Cancelar"
 
             # Manejo de eventos cuando se presiona una tecla
