@@ -4,12 +4,16 @@ import random
 import time
 import os
 import subprocess
-
+from logic import obtener_simbolo, girar, simbolo_contar, ganador,simbolo_valor
 # Inicializar Pygame
 pygame.init()
 
 pygame.mixer.init()
 click_sound = pygame.mixer.Sound(os.path.join('img', 'music', 'sound_click.mp3'))
+click_sound_start = pygame.mixer.Sound(os.path.join('img', 'music', 'sound_slot.wav'))
+win_sound = pygame.mixer.Sound(os.path.join('img', 'music', 'winner_slot.wav'))
+lose_sound = pygame.mixer.Sound(os.path.join('img', 'music', 'loser_slot.wav'))
+
 
 # Definir tamaño de la pantalla
 WIDTH = 960
@@ -174,7 +178,7 @@ def game_screen(screen, symbol_images):
                     reel_positions[i][j] += speed
                     if reel_positions[i][j] > SLOT_AREA.bottom + symbol_height:
                         reel_positions[i][j] = SLOT_AREA.top - symbol_height
-        
+
         # Dibujar la imagen de fondo del brillo
         screen.blit(brillo_image, (SLOT_AREA.x, SLOT_AREA.y - 23))  # Ajustar la posición Y aquí
 
@@ -182,16 +186,17 @@ def game_screen(screen, symbol_images):
         screen.blit(overlay_image, (SLOT_AREA.x, SLOT_AREA.y - 23))  # Ajustar la posición Y aquí
 
         screen.blit(play_button_image, play_button_rect.topleft)
+
         # Dibujar la imagen de borde del saldo
         screen.blit(saldo_border_image, saldo_border_rect.topleft)
         text_x = saldo_border_rect.left + saldo_border_rect.width // 2
-        text_y = saldo_border_rect.top + saldo_border_rect.height // 2 - 2  
+        text_y = saldo_border_rect.top + saldo_border_rect.height // 2 - 2
         draw_text(f"${saldo}", font, (0, 0, 255), screen, text_x, text_y + 5)
 
         # Dibujar la imagen de borde de mont_apost
         screen.blit(saldo_border_image_2, saldo_border_rect_2.topleft)
         text_x_2 = saldo_border_rect_2.left + saldo_border_rect_2.width // 2
-        text_y_2 = saldo_border_rect_2.top + saldo_border_rect_2.height // 2 - 2 
+        text_y_2 = saldo_border_rect_2.top + saldo_border_rect_2.height // 2 - 2
 
         if spinning:
             draw_text(f"${mont_apost}", font, (0, 0, 255), screen, text_x_2, text_y_2 + 5)
@@ -200,63 +205,79 @@ def game_screen(screen, symbol_images):
                 draw_text(f"$0", font, (0, 0, 255), screen, text_x_2, text_y_2 + 5)
             else:
                 draw_text(f"${mont_apost}", font, (0, 0, 255), screen, text_x_2, text_y_2 + 5)
-        
+
         # Dibujar la imagen de borde de mont_wing
         screen.blit(saldo_border_image_3, saldo_border_rect_3.topleft)
         text_x_3 = saldo_border_rect_3.left + saldo_border_rect_3.width // 2
-        text_y_3 = saldo_border_rect_3.top + saldo_border_rect_3.height // 2 - 2 
+        text_y_3 = saldo_border_rect_3.top + saldo_border_rect_3.height // 2 - 2
         draw_text(f"${mont_wing}", font, (0, 0, 255), screen, text_x_3, text_y_3 + 5)
 
         screen.blit(min_bet_button_image, min_bet_button_rect.topleft)
         screen.blit(max_bet_button_image, max_bet_button_rect.topleft)
         screen.blit(recharge_button_image, recharge_button_rect.topleft)
 
-        # Actualiza la pantalla despues de dibujar todos los elementos 
+        # Actualiza la pantalla después de dibujar todos los elementos
         pygame.display.update()
 
+
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    if play_button_rect.collidepoint(event.pos):
-                        spinning = True
-                        spin_start_time = time.time()
-                        # Girar los rodillos al iniciar el giro
-                        reels = [random.randint(0, num_symbols - 1) for _ in range(3)]
-                        click_sound.play()  
-                    aux_bet = 0  # Variable para almacenar la apuesta anterior
-                     # Verificar si el saldo es mayor a 0 antes de permitir la apuesta
-                    if saldo > 0:
-                        # Reduce el monto apostado si no es cero
-                        if min_bet_button_rect.collidepoint(event.pos):
-                            if mont_apost != 0:
-                                if mont_apost >= 200: #Verifica que la apuesta actual sea suficiente para reducir
-                                    mont_apost -= 200
-                                    saldo +=200 #Devolver la cantidad al saldo
-                                    click_sound.play()  # Reproduce el sonido de clic
-                
-                        # Aumenta el monto apostado a 200 y reduce el saldo en la misma cantidad
-                        if max_bet_button_rect.collidepoint(event.pos):
-                            if saldo >= 200:  # Verificar si hay suficiente saldo
-                                aux_bet = mont_apost #Almacenar la apuesta anterior
-                                mont_apost += 200
-                                saldo -= 200  # Disminuir el saldo
-                                click_sound.play()  # Reproduce el sonido de clic
-            
+                    if play_button_rect.collidepoint(event.pos) and not spinning:
+                        if mont_apost == 0:
+                            print("Monto apostado es cero. No se puede girar.")
+                        else:
+                            spinning = True
+                            spin_start_time = time.time()
+                            click_sound.play()
+                            resultado, cambiar_simbolos = girar(3)
+                            for i in range(3):
+                                reels[i] = list(simbolo_contar.keys()).index(resultado[i])
+
+                            # Reiniciar monto apostado a cero después de girar
+                            mont_apost = 0
+                            click_sound_start.play()
+
+                    if min_bet_button_rect.collidepoint(event.pos):
+                        if saldo > 0 and mont_apost >= 200:
+                            saldo += mont_apost
+                            mont_apost -= 200
+                            click_sound.play()
+
+                    if max_bet_button_rect.collidepoint(event.pos):
+                        if saldo >= 200:
+                            saldo -= 200
+                            mont_apost += 200
+                            click_sound.play()
+
                     if recharge_button_rect.collidepoint(event.pos):
-                        click_sound.play()  # Reproduce el sonido de clic
-                        # Llama a la funcion de recarga y actualiza el saldo
+                        click_sound.play()
                         saldo = open_recharge_window(saldo)
-                        
                     
 
         # Verifica si ha pasado el tiempo suficiente desde que inició el giro de los rodillos
-        if spinning and time.time() - spin_start_time >= 2:
-            # Detiene el giro de los rodillos después de 2 segundos
+        # Dentro del bucle principal game_screen()
+        if spinning and time.time() - spin_start_time >= 3:
             spinning = False
-        
+            middle_index = 1  # Suponiendo que el símbolo central es el segundo en la lista de posiciones
+            for i in range(3):
+                symbol_index = (reels[i] + middle_index) % len(SYMBOLS)
+                symbol = SYMBOLS[symbol_index]
+                print(f"Reel {i+1} middle symbol: {symbol}")
+
+            # Calcular ganancias o pérdidas utilizando la función ganador
+            resultado_linea = [SYMBOLS[reels[i]] for i in range(3)]
+            ganancia = ganador(resultado_linea, mont_apost, simbolo_valor)  # Suponiendo que 'valores' está definido
+
+            if ganancia > 0:
+                print(f"Felicidades, has ganado ${ganancia}!")
+                saldo += ganancia
+                mont_wing += ganancia  # Actualizar monto ganado
+                win_sound.play()  # Reproducir sonido de victoria
+            else:
+                print("Lo siento, no has ganado esta vez.")
+                lose_sound.play()  # Reproducir sonido de pérdida
+
         # Limita la velocidad de fotogramas a 60 FPS para controlar la velocidad del juego
         clock.tick(60)
 
