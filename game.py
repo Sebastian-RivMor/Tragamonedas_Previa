@@ -233,10 +233,21 @@ def game_screen(screen, symbol_images):
                             resultado, cambiar_simbolos = girar(3)
                             for i in range(3):
                                 reels[i] = list(simbolo_contar.keys()).index(resultado[i])
-
-                            # Reiniciar monto apostado a cero después de girar
+                            ganancia = ganador(resultado, mont_apost, simbolo_valor)
+                            
+                            if ganancia > 0:
+                                print("------------------------------------------------")
+                                print(f"Felicidades, has ganado ${ganancia}!")
+                                saldo += ganancia
+                                mont_wing += ganancia  # Actualizar monto ganado
+                                win_sound.play()  # Reproducir sonido de victoria
+                            else:
+                                print("------------------------------------------------")
+                                print("Lo siento, no has ganado esta vez.")
+                                lose_sound.play()  # Reproducir sonido de pérdida
+                            
                             mont_apost = 0
-                            click_sound_start.play()
+                            #click_sound_start.play()
 
                     if min_bet_button_rect.collidepoint(event.pos):
                         if saldo > 0 and mont_apost >= 200:
@@ -255,8 +266,7 @@ def game_screen(screen, symbol_images):
                         saldo = open_recharge_window(saldo)
                     
 
-        # Verifica si ha pasado el tiempo suficiente desde que inició el giro de los rodillos
-        # Dentro del bucle principal game_screen()
+        # # Verifica si ha pasado el tiempo suficiente desde que inició el giro de los rodillos
         if spinning and time.time() - spin_start_time >= 3:
             spinning = False
             middle_index = 1  # Suponiendo que el símbolo central es el segundo en la lista de posiciones
@@ -269,14 +279,6 @@ def game_screen(screen, symbol_images):
             resultado_linea = [SYMBOLS[reels[i]] for i in range(3)]
             ganancia = ganador(resultado_linea, mont_apost, simbolo_valor)  # Suponiendo que 'valores' está definido
 
-            if ganancia > 0:
-                print(f"Felicidades, has ganado ${ganancia}!")
-                saldo += ganancia
-                mont_wing += ganancia  # Actualizar monto ganado
-                win_sound.play()  # Reproducir sonido de victoria
-            else:
-                print("Lo siento, no has ganado esta vez.")
-                lose_sound.play()  # Reproducir sonido de pérdida
 
         # Limita la velocidad de fotogramas a 60 FPS para controlar la velocidad del juego
         clock.tick(60)
