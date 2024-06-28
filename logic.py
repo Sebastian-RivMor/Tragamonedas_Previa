@@ -1,23 +1,23 @@
 import random
 
 simbolo_contar = {
-    "symbol_apple": 2,       
+    "symbol_3bar": 2,       
     "symbol_bar": 5,        
     "symbol_bell": 8,      
-    "symbol_watermelon": 14,    
-    "symbol_limon": 17,     
-    "symbol_cherry": 22,    
-    "symbol_seven": 12      
+    "symbol_cherry": 22, 
+    "symbol_grape": 17,     
+    "symbol_seven": 12,
+    "symbol_watermelon": 14        
 }
 
 simbolo_valor = {
-    "symbol_apple": 1000,       
-    "symbol_bar": 500,        
-    "symbol_bell": 100,      
-    "symbol_watermelon": 75,    
-    "symbol_limon": 50,     
-    "symbol_cherry": 25,    
-    "symbol_seven": 250      
+    "symbol_apple": 2,       
+    "symbol_bar": 5,        
+    "symbol_bell": 8,      
+    "symbol_cherry": 22, 
+    "symbol_grape": 17,     
+    "symbol_seven": 12,
+    "symbol_watermelon": 14      
 }
 
 def obtener_simbolo():

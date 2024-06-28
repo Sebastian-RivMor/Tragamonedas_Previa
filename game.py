@@ -25,8 +25,8 @@ font = pygame.font.SysFont(None, 30)
 # Definir símbolos del slot machine
 
 SYMBOLS = [
-'symbol_apple', 'symbol_bar', 'symbol_bell', 'symbol_cherry',
-'symbol_limon', 'symbol_seven', 'symbol_watermelon'
+'symbol_3bar', 'symbol_bar', 'symbol_bell', 'symbol_cherry',
+'symbol_grape', 'symbol_seven', 'symbol_watermelon'
 ]
 
 # Definir posiciones iniciales de los rieles
@@ -233,40 +233,37 @@ def game_screen(screen, symbol_images):
                             resultado, cambiar_simbolos = girar(3)
                             for i in range(3):
                                 reels[i] = list(simbolo_contar.keys()).index(resultado[i])
-                            ganancia = ganador(resultado, mont_apost, simbolo_valor)
+                                ganancia = ganador(resultado, mont_apost, simbolo_valor)
                             
                             if ganancia > 0:
                                 print("------------------------------------------------")
                                 print(f"Felicidades, has ganado ${ganancia}!")
                                 saldo += ganancia
                                 mont_wing += ganancia  # Actualizar monto ganado
-                                win_sound.play()  # Reproducir sonido de victoria
+                                if not pagar_jugador(ganancia):
+                                    print("No hay suficiente dinero en la reserva para pagar al jugador.")
                             else:
                                 print("------------------------------------------------")
                                 print("Lo siento, no has ganado esta vez.")
-                                lose_sound.play()  # Reproducir sonido de pérdida
-                            
+                                agregar_a_reserva(mont_apost)  # Agregar el monto apostado a la reserva
+                                
                             mont_apost = 0
-                            #click_sound_start.play()
 
                     if min_bet_button_rect.collidepoint(event.pos):
-                        if saldo > 0 and mont_apost >= 200:
-                            saldo += mont_apost
-                            mont_apost -= 200
-                            click_sound.play()
-
-                    if max_bet_button_rect.collidepoint(event.pos):
                         if saldo >= 200:
                             saldo -= 200
-                            mont_apost += 200
+                            mont_apost = 200  # Establecer el monto de apuesta a 200
+                            click_sound.play()
+                    if max_bet_button_rect.collidepoint(event.pos):
+                        if saldo >= 400:
+                            saldo -= 400
+                            mont_apost = 400  # Establecer el monto de apuesta a 400
                             click_sound.play()
 
                     if recharge_button_rect.collidepoint(event.pos):
                         click_sound.play()
                         saldo = open_recharge_window(saldo)
-                    
-
-        # # Verifica si ha pasado el tiempo suficiente desde que inició el giro de los rodillos
+                            
         if spinning and time.time() - spin_start_time >= 3:
             spinning = False
             middle_index = 1  # Suponiendo que el símbolo central es el segundo en la lista de posiciones
@@ -278,10 +275,43 @@ def game_screen(screen, symbol_images):
             # Calcular ganancias o pérdidas utilizando la función ganador
             resultado_linea = [SYMBOLS[reels[i]] for i in range(3)]
             ganancia = ganador(resultado_linea, mont_apost, simbolo_valor)  # Suponiendo que 'valores' está definido
-
+            
+            if ganancia > 0:
+                print(f"Has ganado ${ganancia}!")
+                saldo += ganancia
+                mont_wing += ganancia  # Actualizar monto ganado
+                if not pagar_jugador(ganancia):
+                    print("No hay suficiente dinero en la reserva para pagar al jugador.")
+                win_sound.play()  # Reproducir sonido de victoria
+            else:
+                print("No has ganado esta vez.")
+                agregar_a_reserva(mont_apost)  # Agregar el monto apostado a la reserva
+                lose_sound.play()  # Reproducir sonido de pérdida
+            print(f"Cantidad en reserva: {obtener_reserva()}")
+            mont_apost = 0
 
         # Limita la velocidad de fotogramas a 60 FPS para controlar la velocidad del juego
         clock.tick(60)
+
+reserva = 5000  # Cantidad de reserva inicial
+
+# Función para realizar un pago a un jugador
+def pagar_jugador(monto):
+    global reserva
+    if reserva >= monto:
+        reserva -= monto
+        return True
+    else:
+        return False  # No hay suficiente dinero en la reserva para pagar al jugador
+
+# Función para agregar dinero a la reserva cuando el jugador pierde
+def agregar_a_reserva(monto):
+    global reserva
+    reserva += monto
+
+# Función para obtener la cantidad actual de la reserva (para propósitos de consola)
+def obtener_reserva():
+    return reserva
 
 def open_recharge_window(current_saldo):
     try:
