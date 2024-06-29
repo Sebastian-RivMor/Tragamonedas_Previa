@@ -227,6 +227,7 @@ def game_screen(screen, symbol_images):
                         if mont_apost == 0:
                             print("Monto apostado es cero. No se puede girar.")
                         else:
+                            saldo -= mont_apost  # Restar el monto apostado al saldo solo cuando se inicia el giro
                             spinning = True
                             spin_start_time = time.time()
                             click_sound.play()
@@ -234,7 +235,7 @@ def game_screen(screen, symbol_images):
                             for i in range(3):
                                 reels[i] = list(simbolo_contar.keys()).index(resultado[i])
                                 ganancia = ganador(resultado, mont_apost, simbolo_valor)
-                            
+
                             if ganancia > 0:
                                 print("------------------------------------------------")
                                 print(f"Felicidades, has ganado ${ganancia}!")
@@ -246,8 +247,9 @@ def game_screen(screen, symbol_images):
                                 print("------------------------------------------------")
                                 print("Lo siento, no has ganado esta vez.")
                                 agregar_a_reserva(mont_apost)  # Agregar el monto apostado a la reserva
-                                
+
                             mont_apost = 0
+
 
                     if min_bet_button_rect.collidepoint(event.pos):
                         if saldo >= 200:
