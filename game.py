@@ -219,7 +219,6 @@ def game_screen(screen, symbol_images):
         # Actualiza la pantalla después de dibujar todos los elementos
         pygame.display.update()
 
-
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -227,48 +226,27 @@ def game_screen(screen, symbol_images):
                         if mont_apost == 0:
                             print("Monto apostado es cero. No se puede girar.")
                         else:
-                            saldo -= mont_apost  # Restar el monto apostado al saldo solo cuando se inicia el giro
                             spinning = True
                             spin_start_time = time.time()
                             click_sound.play()
                             resultado, cambiar_simbolos = girar(3)
+                            saldo -= mont_apost # se resta cantidad apostada al saldo ---------
                             for i in range(3):
                                 reels[i] = list(simbolo_contar.keys()).index(resultado[i])
                                 ganancia = ganador(resultado, mont_apost, simbolo_valor)
-
-                            if ganancia > 0:
-                                print("------------------------------------------------")
-                                print(f"Felicidades, has ganado ${ganancia}!")
-                                saldo += ganancia
-                                mont_wing += ganancia  # Actualizar monto ganado
+                            
+                            if ganancia > 0: ####################################################################
                                 if not pagar_jugador(ganancia):
                                     print("No hay suficiente dinero en la reserva para pagar al jugador.")
                             else:
-                                print("------------------------------------------------")
-                                print("Lo siento, no has ganado esta vez.")
                                 agregar_a_reserva(mont_apost)  # Agregar el monto apostado a la reserva
+                                
+                            mont_apost=0
 
-                            mont_apost = 0
-
-
-                    if min_bet_button_rect.collidepoint(event.pos):
-                        if saldo >= 200:
-                            saldo -= 200
-                            mont_apost = 200  # Establecer el monto de apuesta a 200
-                            click_sound.play()
-                    if max_bet_button_rect.collidepoint(event.pos):
-                        if saldo >= 400:
-                            saldo -= 400
-                            mont_apost = 400  # Establecer el monto de apuesta a 400
-                            click_sound.play()
-
-                    if recharge_button_rect.collidepoint(event.pos):
-                        click_sound.play()
-                        saldo = open_recharge_window(saldo)
-                            
         if spinning and time.time() - spin_start_time >= 3:
             spinning = False
             middle_index = 1  # Suponiendo que el símbolo central es el segundo en la lista de posiciones
+            print("════════════════════════════════════════════════")
             for i in range(3):
                 symbol_index = (reels[i] + middle_index) % len(SYMBOLS)
                 symbol = SYMBOLS[symbol_index]
@@ -279,21 +257,20 @@ def game_screen(screen, symbol_images):
             ganancia = ganador(resultado_linea, mont_apost, simbolo_valor)  # Suponiendo que 'valores' está definido
             
             if ganancia > 0:
-                print(f"Has ganado ${ganancia}!")
+                print("------------------------------------------------")
+                print(f"Felicidades, has ganado ${ganancia}!")
                 saldo += ganancia
                 mont_wing += ganancia  # Actualizar monto ganado
+                win_sound.play()  # Reproducir sonido de victoria
                 if not pagar_jugador(ganancia):
                     print("No hay suficiente dinero en la reserva para pagar al jugador.")
-                win_sound.play()  # Reproducir sonido de victoria
             else:
-                print("No has ganado esta vez.")
+                print("------------------------------------------------")
+                print("Lo siento, no has ganado esta vez.")
                 agregar_a_reserva(mont_apost)  # Agregar el monto apostado a la reserva
                 lose_sound.play()  # Reproducir sonido de pérdida
             print(f"Cantidad en reserva: {obtener_reserva()}")
-            mont_apost = 0
-
-        # Limita la velocidad de fotogramas a 60 FPS para controlar la velocidad del juego
-        clock.tick(60)
+            mont_apost=0
 
 reserva = 5000  # Cantidad de reserva inicial
 
