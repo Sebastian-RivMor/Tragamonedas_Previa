@@ -1,6 +1,6 @@
-import pygame
-import sys
-import os
+import pygame #Liblería para interfaces de videojuegos
+import sys #Líblería para establecer las imágenes, darle formato a las letras en otros características
+import os #Librería para trabajar con archivos internos del proyecto
 
 # Inicializar Pygame
 pygame.init()
@@ -26,6 +26,13 @@ HEIGHT = 400
 # Definir la fuente
 font = pygame.font.SysFont(None, 48)
 
+#Icono y titulo
+pygame.display.set_caption("UPN")
+icono = pygame.image.load("img/UPN.png")
+pygame.display.set_icon(icono)
+
+current_credit = 0
+max_credit = 500
 # Interacción con el usuario
 def recharge_screen(current_saldo):
     # Se crea el formulario 
@@ -43,6 +50,10 @@ def recharge_screen(current_saldo):
     # Cargar imagen del botón "Cancelar"
     cancel_button_image = pygame.image.load(os.path.join('img','buttons_img', 'button_cancel.png'))
     cancel_button_image = pygame.transform.scale(cancel_button_image, (170, 70))
+
+    # Cargar imagen de botón "Cargar"
+    carga_button_image = pygame.image.load(os.path.join('img','buttons_img','button_cargar.png'))
+    carga_button_image = pygame.transform.scale(carga_button_image, (70, 70))
 
     # Cargar imagen de fondo para el cuadro de entrada
     input_background = pygame.image.load(os.path.join('img','label' ,'zone_recarga.png'))
@@ -79,7 +90,7 @@ def recharge_screen(current_saldo):
                 # Detectar clic en el botón "Aceptar"
                 elif accept_button_rect.collidepoint(event.pos):
                     if click_sound:
-                        click_sound.play()  # Reproduce el sonido de clic
+                        click_sound.play()  # Reproduce el sonido de clic        
                     try: 
                         # El texto ingresado se le suma al saldo actual, actualizando el nuevo saldo
                         new_saldo = current_saldo + int(text)
@@ -92,28 +103,21 @@ def recharge_screen(current_saldo):
                 elif cancel_button_rect.collidepoint(event.pos):
                     if click_sound:
                         click_sound.play()  # Reproduce el sonido de clic
-                    done = True # Cerrar la ventana al presionar "Cancelar"
+                    done = True # Cerrar la ventana al presionar "Cancelar"}
 
-            # Manejo de eventos cuando se presiona una tecla
-            elif event.type == pygame.KEYDOWN:
-                # Verifica si el cuadro de entrada está activo
-                if active:
-                    # Verifica si se presionó ENTER
-                    if event.key == pygame.K_RETURN:
-                        try:
-                            new_saldo = current_saldo + int(text)
-                            # Termina el bucle al presionar ENTER
-                            done = True
-                        except ValueError:
-                            text = ''
-                    # Verifica si se presionó la tecla Backspace
-                    elif event.key == pygame.K_BACKSPACE:
-                        # Elimina el último carácter del texto ingresado
-                        text = text[:-1]
-                    # Captura todos los demás caracteres ingresados y los agrega al texto
-                    else:
-                        text += event.unicode
-
+                # Detectar clic en el botón de cargar
+                elif carga_button_rect.collidepoint(event.pos):
+                    if click_sound:
+                        click_sound.play()  # Reproduce el sonido de clic
+                    # Incrementar el crédito actual en 100
+                    global current_credit
+                    current_credit += 100
+                    # Si el crédito actual supera el límite, establecerlo a 0
+                    if current_credit > max_credit:
+                        current_credit = 0
+                    # Actualizar el texto mostrado si lo necesitas
+                    text = str(current_credit)
+        
         screen.blit(background, (0, 0))  # Dibujar imagen de fondo
 
         # Dibujar imagen de fondo del cuadro de entrada
@@ -130,6 +134,9 @@ def recharge_screen(current_saldo):
         
         # Dibujar el botón "Cancelar" con la imagen
         cancel_button_rect = screen.blit(cancel_button_image, (350, 250))
+
+        # Dibujar el botón "Carga"
+        carga_button_rect = screen.blit(carga_button_image, (460,140))
 
         pygame.display.flip()
 
@@ -151,6 +158,6 @@ def main():
     new_saldo = recharge_screen(current_saldo)
     # Imprime el nuevo saldo
     print(new_saldo)
-
+#llama a la función main
 if __name__ == "__main__":
     main()

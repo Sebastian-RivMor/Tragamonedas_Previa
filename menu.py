@@ -1,6 +1,6 @@
-import pygame
-import sys
-import os
+import pygame #Liblería para interfaces de videojuegos
+import sys #Líblería para establecer las imágenes, darle formato a las letras en otros características
+import os #Librería para trabajar con archivos internos del proyecto
 
 # Inicializar Pygame
 pygame.init()
@@ -11,12 +11,20 @@ BLUE = (0, 0, 255)
 HOVER_LIME_GREEN = (34, 139, 34)
 
 # Definir tamaño de la pantalla
-WIDTH = 800
-HEIGHT = 500
+WIDTH = 960
+HEIGHT = 540
+#Definir nombre de la ventana
+pygame.display.set_caption("MENÚ")
 
 # Definir la fuente
 font = pygame.font.SysFont(None, 48)
 
+#Icono y titulo
+pygame.display.set_caption("MENÚ")
+icono = pygame.image.load("img/UPN.png")
+pygame.display.set_icon(icono)
+
+# Renderiza texto en una superficie pygame en la posición especificada
 def draw_text(text, font, color, surface, x, y):
     text_obj = font.render(text, True, color)
     text_rect = text_obj.get_rect()
@@ -39,7 +47,7 @@ def main_menu(screen):
         screen.blit(background, (0, 0))
 
         # Posición del botón (ajustar aquí)
-        button_x = WIDTH / 3.4
+        button_x = WIDTH / 2
         button_y = HEIGHT * 2 / 2.5
 
         # Obtener la posición del ratón
